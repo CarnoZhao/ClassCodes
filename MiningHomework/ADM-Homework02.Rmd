@@ -1,0 +1,189 @@
+---
+title: "Applied Data Mining Homework 2"
+author: "Xun Zhao, xz2827"
+output: pdf_document
+fontsize: 12pt
+---
+
+# Problem 1: Trees
+
+## 1.
+
+Yes. But it needs the tree to be more complex.
+
+As the tree classifier boundary is made of some line segments that are parallel with x-axis or y-axis, we can draw a zigzag curve along the linear boundary. Thus, the sloping linear boundary becomes many segments, and every segment is a dicision in the tree classifier.
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 5, out.width = "20em", fig.align = "center"}
+x1 = rnorm(100, 0, 1)
+x2 = rnorm(100, 0, 1)
+y = ifelse(x1 + x2 > 0, 1, 0)
+d = data.frame(cbind(x1, x2, y)[which(x1 + x2 > 1 | x1 + x2 < -1),])
+library(ggplot2)
+ggplot(d, aes(x = x1, y = x2, shape = as.factor(y))) + 
+	geom_point() + 
+	scale_shape_manual(values = c(2,16)) + 
+	geom_segment(x = -2, y = 2, xend = -1, yend = 2) +
+	geom_segment(x = -1, y = 2, xend = -1, yend = 1) +
+	geom_segment(x = -1, y = 1, xend = 0, yend = 1) +
+	geom_segment(x = 0, y = 1, xend = 0, yend = 0) +
+	geom_segment(x = 0, y = 0, xend = 1, yend = 0) +
+	geom_segment(x = 1, y = 0, xend = 1, yend = -1) +
+	geom_segment(x = 1, y = -1, xend = 2, yend = -1) +
+	geom_segment(x = 2, y = -1, xend = 2, yend = -2) + 
+	xlim(c(-3, 3)) + 
+	ylim(c(-3, 3))
+```
+
+## 2.
+
+No, the Bayes-Optimal is defined as:
+
+$$f(\vec{x}) = \underset{y}{arg\,max}P({\bf{Y}} = y | {\bf{X}} = \vec{x})$$
+
+And the risk is defined as:
+
+$$R(f) = \underset{+1,\,-1}{\sum}\int L(y,\,f(\vec{x}))P(\vec{x},\,y)d\vec{x}$$
+
+Thus, the risk $R(f)$ depends on the possible data distribution instead of only existing data points. Moreover, the Bayes-optimal classifier is defined by the possible distribution, so it can always minimize the risk under certain data model. However, the tree classifier cannot fit the linear boundary, which causes the misclassification compared with Bayes-optimal. As the Bayes-optimal has the lowest risk, the risk of tree classifier will always differ from Bayes-optimal, unless the Bayes-optimal's boundary is parallel to x or y-axis.
+
+## 3. 
+
+$$g(\vec{x}) = \begin{cases}
+	f_1(\vec{x}) > 0 &
+	\begin{cases}
+		f_2(\vec{x}) > 0\rightarrow class\,A\\
+		f_2(\vec{x}) < 0\rightarrow class\,B
+	\end{cases}\\
+	f_1(\vec{x}) < 0 &
+	\begin{cases}
+		f_3(\vec{x}) > 0\rightarrow class\,B\\
+		f_3(\vec{x}) < 0\rightarrow class\,C
+	\end{cases}
+\end{cases}$$
+
+# Problem 2: 10-fold Cross Validation
+
+## 1.
+
+10 folds means that we devide the data set $\chi$ (after shuffling) in to 10 nonoverlapping parts with the same size $\frac{||\chi||}{10}$.
+$$\chi = \bigcup^{10}_{i = 1}\chi_i$$
+$$\text{if }i\neq j,\,\chi_i\cap\chi_j = \varnothing$$
+$$||\chi_i|| = \frac{||\chi||}{10}$$
+
+## 2.
+<!-- 
+Because k-NN algorithm actually is not a learning algorithm with model parameter, the training data can be used only for classification. Thus, we do not have to choose the best model from a set.
+ -->
+For each new $i \in \{1, 2, ..., 10\}$, namely, different cross validation set $\chi_{cv} = \chi_{i}$, we learn the model from training set 
+$$\chi_{\text{training}} = \chi - \chi_i = \bigcup_{j \neq i}\chi_j$$
+
+Next, we apply the classification model $f$ on $\chi_{cv} = \chi_{i}$ to calculate the error on cross validation set. Then, repeat this process for each $i$.<!-- Then, the final error is the average of these errors for each $i$. Finally, we choose the hyperparameter that has the least cross validation error.
+ -->
+<!-- The training set is used as model (or classification function).
+
+$$\hat{y} = f(\vec{x};\,k,\,\chi_{training}),\ \ \ k,\,\chi_{training}\text{ are fixed}$$
+
+The cross validation set is used as a criterion to quantify how well the model can generalize.
+
+$$R(f) = \sum_{\vec{x}\text{ in }\chi_{cv}}l[y,\,f(\vec{x};\,k,\,\chi_{training})]$$ -->
+
+## 3.
+
+As the risk function $R(k)$ given below, we compare the risk (for all folds and for all cross validation data points).
+
+$$R(k) = \frac{1}{10}\sum^{10}_{i = 1}\frac{1}{||\chi_i||}\sum^{||\chi_i||}_{j = 1}l[y_{ij},\,f(\vec{x}_{ij};\,k,\,\chi - \chi_i)]$$
+
+## 4.
+
+We can simply choose $k$ that minimize the risk $R(k)$.
+
+$$k = \underset{k\in \lbrace 1, 3, 5, 7, 9\rbrace}{arg\,min}R(k)$$
+
+## 5.
+
+The most obvious disadvantage of k-NN algorithm is that it has to store all the training data, and iterate all the training data when classifying a new data point. Thus, it is time-consuming and occupy a lot of storage.
+
+# Problem 3: Cross validating a nearest neighbor classifier
+
+## 1. Read data from files
+
+```{r}
+pixels = as.matrix(read.table('../Data/uspsdata.txt'))
+labels = as.matrix(read.table('../Data/uspscl.txt'))
+nums = nrow(pixels)
+```
+
+## 2. Plot first 4 digits
+
+```{r, fig.width = 20, fig.height = 20, out.width = '5em', out.height = '5em', fig.align = 'center'}
+image.print <- function(x){
+	x.matrix <- matrix(x, 16, 16, byrow = FALSE)
+	x.matrix.rotated <- t(apply(x.matrix, 1, rev))
+	image(x.matrix.rotated, 
+		axes = FALSE, 
+		col = grey(seq(0, 1, length.out = 256))
+		)
+}
+. = sapply(1:4, function(i){image.print(pixels[i,])})
+```
+
+## 3. Devide data into 3 parts
+
+```{r}
+# the labels are already random. Don't have to shuffle
+p.tr = pixels[1:round(nums * 0.6),]
+l.tr = labels[1:round(nums * 0.6),]
+p.ts = pixels[(round(nums * 0.6) + 1):round(nums * 0.8),]
+l.ts = labels[(round(nums * 0.6) + 1):round(nums * 0.8),]
+p.cv = pixels[(round(nums * 0.8) + 1):nums,]
+l.cv = labels[(round(nums * 0.8) + 1):nums,]
+```
+
+## 4. Train with $k = 1$
+
+```{r}
+library(class)
+estim = knn(p.tr, p.cv, cl = l.tr, k = 1)
+err.rate = sum(estim != l.cv) / length(estim)
+```
+The test error is:
+```{r, echo = FALSE}
+paste(c('err.rate = ', err.rate), collapse = '')
+```
+
+The misclassified digits are:
+```{r, fig.width = 20, fig.height = 20, out.width = '5em', out.height = '5em', fig.align = 'center', echo = FALSE}
+rows = which(estim != l.cv) + round(nums * 0.6)
+for (row in rows){
+	image.print(pixels[row,])
+}
+```
+
+## 5. Optimize $k$
+
+```{r}
+k.seq = seq(1, 13, 2)
+err.rates = sapply(
+	k.seq, 
+	function(k){
+		estim = knn(p.tr, p.cv, cl = l.tr, k = k)
+		sum(estim != l.cv) / length(estim)
+})
+print(rbind(k.seq, err.rates))
+```
+
+To choose the best hyperparameter $k$, we need to choose the $k$ with least cross validation error:
+```{r, echo = FALSE}
+k.optim = k.seq[which(err.rates == min(err.rates))]
+paste(c('k.optim = ', k.optim, ', min(err.rates) = ', min(err.rates)), collapse = '')
+```
+
+```{r}
+estim = knn(rbind(p.tr, p.cv), p.ts, cl = c(l.tr, l.cv), k = k.optim)
+err.rate = sum(estim != l.ts) / length(estim)
+```
+
+Trained with training set and cross-validation set, the model's error rate on test set is:
+```{r, echo = FALSE}
+paste(c('err.rate = ', err.rate), collapse = '')
+```
