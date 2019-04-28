@@ -5,9 +5,9 @@
 \geometry{a4paper,scale=0.8}
 \setlength{\parindent}{2em}
 
-\title{\bf{The Analysis of Probabilities of Conjugation between E.coli and Transposition Mutagenesis of }$kan^R$}
+\title{\bf{Measure the Probabilities of Conjugation and Transposition Mutagenesis of }$kan^R$ \bf{in E.coli}}
 \author{Xun Zhao (Partner: Chase)}
-\date{April 19, 2019}
+\date{April 19, 2019\\Friday}
 
 \begin{document}
     \begin{titlepage}
@@ -18,11 +18,11 @@
 
     \renewcommand{\abstractname}{Introduction}
     \begin{abstract}
-		The "jumping" gene was dicovered by McClintock who found spots on corn with different colors. Later, it was found that this phenomenon also happens in other species. 
+		The "jumping" gene was dicovered by McClintock who found that the phenotypes of corn's colorful spots sometimes do not follow the Mendelian genetics. She found this kind of genes can move to different place of the genome. Later, it was found that this phenomenon also happens in other species. 
 		
 		Conjugation is a cell-to-cell contact that can transfer plasmid and the genes on this plasmid from one bacteria cell to another, through a mating bridge called pilus. Transposon is a part of DNA sequence that can move or duplicate itself from one place to another even to different chromosomes. When the transposon is inserted into a gene, it can knock out the old gene and replace its function with new gene's function, which is called transposition mutagenesis.
 
-		The first part of this experiment is to mate two strains of \emph{E.coli}, and let conjugation happens. The second part is using IPTG to induce $kan^R$ transposon on the plasmid to transpose.
+		The first part of this experiment is to mate two strains of \emph{E.coli}, and let conjugation happens. The second part is using IPTG to induce $kan^R$ transposon on the plasmid to transpose. After doing these, we can calculate the probability of conjugation and transposition mutagenesis by counting the number of certain kind of colonies.
 
 		If conjugation happens, the recipient cell will get the $cm^R$ gene from pVJT128 plasmid, becoming insensitive to chloramphenicol. If transposition happens, the cell will have functional $kan^R$ gene, and become insensitive to kanamycin. If transposition mutagenesis happens at the \emph{lacZ} gene, the colony will be white on X-gel plates, due to it does not have the functional enzyme to digest X-gel.
 	\end{abstract}
@@ -49,9 +49,9 @@
 			$$
 			\begin{aligned}
 			\text{Conjugation}\% &= \frac{\#\text{Cm.Nal} - \#\text{Reversion.Recipient} - \#\text{Reversion.Donor}}{\#\text{NA.Total}}\\
-			&= \frac{508 - 135- 0}{\frac{946 + 107 \times 10 + 13 \times 100}{3} \times 10 ^{5}}\\
-			&= \frac{373}{1105 \times 10 ^ 5}\times 100\%\\
-			&\approx 3.4 \times 10 ^ {-4}\%
+			&= \frac{508 - 0- 0}{\frac{1}{2} \times \frac{946 + 107 \times 10 + 13 \times 100}{3} \times 10 ^{5}}\\
+			&= \frac{508}{\frac{1}{2} \times 1105 \times 10 ^ 5}\times 100\%\\
+			&\approx 9.2 \times 10 ^ {-4}\%
 			\end{aligned}
 			$$
 		\subsection{Transposition and Mutagenesis}
@@ -83,7 +83,7 @@
 			\text{Mutagenesis}\% &= \frac{\#\text{X-gel.Kan.White}}{\#\text{X-gel.Kan.Total}}\\
 			&= \frac{3}{((8654 + 3) + 728 \times 10 + 94 \times 100) / 3}\\
 			&= \frac{3}{8445} \times 100\%\\
-			&\approx 0.35\%
+			&\approx 0.035\%
 			\end{aligned}
 			$$
 	\section{Discussion}
@@ -147,26 +147,26 @@
 			$$
 			\begin{aligned}
 			\#\text{Conjugation} &= \#\text{Colonies.of.Cm.Nal} - \#\text{Recipient.Mutant} - \#\text{Donor.Mutant}\\
-			&= 508 - 135 - 0\\
-			&= 373
+			&= 508 - 0 - 0\\
+			&= 508
 			\end{aligned}
 			$$
 
-			\paragraph{Explanation to Control Plates} Ideally, there if no mutations or contamination happened to recipient and donor cells, they should not survival on Cm plates and Nal plates, respectively. However, in Cm plates of recipient cells, there are 135 colonies. One explanation is that the mutation happened to recipient cells. The second explanation is contamination. Because of their similar shape, color, and size, I do not consider these colonies as contamination of environmental microorganism. but it can be contaminated by donor cells due to shared tips.
+			\paragraph{Explanation to Control Plates} Ideally, there if no mutations or contamination happened to recipient and donor cells, they should not survival on Cm plates and Nal plates, respectively. However, in Cm plates of recipient cells, there are 135 colonies. One explanation is that the spontaneous mutation of recipient cells. The second explanation is contamination. Because of the number is much larger than the normal probability of spontaneous mutation. So I decided to omit this part of calculation.
 
-			\paragraph{Total Number of Recipient Cells} This is calculated by the average of three recipient NA plates, and times the dilution $10 ^ {5}$.
+			\paragraph{Total Number of Recipient Cells} This is calculated by the average of three recipient NA plates, and times the dilution $10 ^ {5}$. Because there are only $500 \mu L$ recipient in mating tube but $1000 \mu L$ in recipient tube, the total number should time $\frac{1}{2}$.
 			$$
 			\begin{aligned}
-			\#\text{Total.Recipient} &= \frac{946 + 107 \times 10 + 13 \times 100}{3} \times 10 ^{5}\\
-			&= 1.105 \times 10 ^ 8
+			\#\text{Total.Recipient} &= \frac{1}{2} \times \frac{946 + 107 \times 10 + 13 \times 100}{3} \times 10 ^{5}\\
+			&= 5.525 \times 10 ^ 7
 			\end{aligned}
 			$$ 
 			
 			\paragraph{Percent Conjugation} This equals to conjugation number divided by total number.
 			$$
 			\begin{aligned}
-			\text{conjugation}\% &= \frac{373}{1.105 \times 10 ^ 8}\times 100 \%\\
-			&\approx 3.4 \times 10 ^ {-4}\%
+			\text{conjugation}\% &= \frac{508}{5.525 \times 10 ^ 7}\times 100 \%\\
+			&\approx 9.2 \times 10 ^ {-4}\%
 			\end{aligned}
 			$$
 
