@@ -33,6 +33,7 @@ import random
 class Genome():
     def __init__(self, filename):
         self.filename = filename
+        self.basename = filename.split('/')[-1].split('.')[0]
 
     def load(self):
         '''
@@ -55,10 +56,10 @@ class Genome():
             des = rec.description
             barcode = des.split(' ')[-1].split('=')[-1]
             barcodes[barcode].append(len(rec.seq))
-        print('In file %s, there are %d barcodes.' % (self.filename.split('/')[-1], len(barcodes))) # Todo 1
+        print('In file %s, there are %d barcodes.' % (self.basename, len(barcodes))) # Todo 1
         print('The total number of reads is %d' % sum(len(reads) for reads in barcodes.values())) # Todo 3
         print('The total number of bases is %d' % sum(sum(reads) for reads in barcodes.values())) # Not mentioned in Todo
-        pdf = PdfPages('./read_length_%s.pdf' % self.filename.split('/')[-1].split('.')[0])
+        pdf = PdfPages('./read_length_%s.pdf' % self.basename)
         for barcode, reads in barcodes.items():
             print('For %s, there are %d reads and %d bases' % (barcode, len(reads), sum(reads))) # Todo 2, 5
             fig, ax = plt.subplots(figsize = (16, 9))
@@ -70,18 +71,24 @@ class Genome():
             pdf.savefig(fig) # Todo 4
         pdf.close()
 
-    def taxonomy_analysis(self):
+    def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         self.load()
         query_seq = ''
         for rec in self.f:
-            if len(rec.seq) < 1000:
+            seqlen = len(rec.seq)
+            if seqlen < lenth:
                 continue
-            idx = random.randint(0, len(rec.seq) - 1000)
-            seq = rec.seq[idx:idx + 1000]
-            query_seq += '>' + rec.description + '\n' + str(seq) + '\n'
+            for _ in range(1 + seqlen // (lenth * squeeze)): # roughly speaking, get 1k bases per 10k bases
+                idx = random.randint(0, seqlen - lenth)
+                seq = rec.seq[idx:idx + lenth]
+                query_seq += '>' + rec.description + '\n' + str(seq) + '\n' # convert to fasta format
+        res = NCBIWWW.qblast(method, db, query_seq)
+        with open('%s.xml' % self.basename, 'w') as fw:
+            fw.write(res.read())
+
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
     # genome.barcode_statistics()
-    genome.taxonomy_analysis()
+    genome.taxonomy_blast()
         
