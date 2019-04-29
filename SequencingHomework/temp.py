@@ -92,13 +92,29 @@ class Genome():
         with open('%s.xml' % self.basename, 'w') as fw:
             fw.write(res.read())
 
-    def taxonomy_xml(self):
+    def taxonomy_read_xml(self):
         '''
         analyze the xml result from blast, using bs4 package (BeautifulSoup)
         Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
+        available information: 
+            hit_def, 
+            hit_len, 
+            hit_num, 
+            hit_hsps:{
+                hsp_bit-score, 
+                hsp_evalue, 
+                hsp_identity, 
+                hsp_align-len}
         '''
-        soup = BeautifulSoup(open('%s.xml' % self.basename, 'html.parser'))
-        pass
+        with open('%s.xml' % self.basename) as f:
+            soup = BeautifulSoup(f.read(), 'html.parser')
+        df = pd.DataFrame({})
+        tag = 'hit_def' # species tag
+        tlist = [t.text for t in soup.find_all(tag)]
+        tlist = [' '.join(t.split(' ')[:2]) if 'PREDICTED:' not in t else ' '.join(t.split(' ')[1:3]) for t in tlist]
+        df['species'] = tlist
+        df.to_csv('%s.csv' % self.basename)
+
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
