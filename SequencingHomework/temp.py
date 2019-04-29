@@ -25,11 +25,12 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-import seaborn as sns
 import numpy as np
 from Bio.Blast import NCBIWWW
 import random
 from bs4 import BeautifulSoup
+import pandas as pd
+from collections import Counter
 
 class Genome():
     def __init__(self, filename):
@@ -96,25 +97,50 @@ class Genome():
         '''
         analyze the xml result from blast, using bs4 package (BeautifulSoup)
         Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
-        available information: 
+        available information:
+        { 
             hit_def, 
             hit_len, 
             hit_num, 
-            hit_hsps:{
+            hit_hsps:
+            {
                 hsp_bit-score, 
                 hsp_evalue, 
                 hsp_identity, 
-                hsp_align-len}
+                hsp_align-len
+            }
+        }
         '''
         with open('%s.xml' % self.basename) as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
         df = pd.DataFrame({})
-        tag = 'hit_def' # species tag
-        tlist = [t.text for t in soup.find_all(tag)]
-        tlist = [' '.join(t.split(' ')[:2]) if 'PREDICTED:' not in t else ' '.join(t.split(' ')[1:3]) for t in tlist]
-        df['species'] = tlist
+        tags = ('hit_def', 'hit_num', )
+        for tag in tags:
+            tlist = [t.text for t in soup.find_all(tag)]
+            if tag == 'hit-def':
+                tlist = [' '.join(t.split(' ')[:2]) if 'PREDICTED:' not in t else ' '.join(t.split(' ')[1:3]) for t in tlist]
+            df[tag] = tlist
         df.to_csv('%s.csv' % self.basename)
 
+    def taxonomy_draw_histplot(self, count_all = True):
+        '''
+        draw a histogram of the number of species that the blast results show
+        Since for each read, there are many results returned
+        So when `count_all` is `True`, all of these results will be included
+        Otherwise, only the first result (best match result) will be included
+        '''
+        d = pd.read_csv('%s.csv' % self.basename, index_col = 0)
+        d.hit_def = d.hit_def.apply(lambda x: x.lower())
+        if count_all:
+            counts = Counter(d.hit_def)
+        else:
+            counts = Counter(d[d["hit_num"] == 1].hit_def)
+        counts = dict(sorted(counts.items(), key = lambda x: x[1], reverse = True)[:10])
+        plt.barh(width = list(counts.values()), y = [x.replace(' ', '\n') for x in counts.keys()])
+        plt.xlabel('Counts of Reads')
+        plt.title(self.basename)
+        matplotlib.rc('ytick', labelsize = 20)
+        plt.savefig('%s.pdf' % self.basename)
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
