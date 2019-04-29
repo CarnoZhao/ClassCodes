@@ -21,6 +21,12 @@ Todo:
 from Bio import SeqIO, Seq
 import gzip
 from collections import defaultdict
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+import seaborn as sns
+import numpy as np
 
 class Genome():
     def __init__(self, filename):
@@ -42,14 +48,30 @@ class Genome():
         (Todo 1-5: DONE !)
         '''
         self.load()
-        barcodes = defaultdict(int)
+        barcodes = defaultdict(list)
         for rec in self.f:
             des = rec.description
             barcode = des.split(' ')[-1].split('=')[-1]
-            barcodes[barcode] += 1
-        print('In file %s, there are %d barcodes.' % (self.filename.split('/')[-1], len(barcodes)))
-        for barcode, num in barcodes.items():
-            print('For %s, there are %d reads' % (barcode, num))
+            barcodes[barcode].append(len(rec.seq))
+        print('In file %s, there are %d barcodes.' % (self.filename.split('/')[-1], len(barcodes))) # Todo 1
+        print('The total number of reads is %d' % sum(len(reads) for reads in barcodes.values())) # Todo 3
+        print('The total number of bases is %d' % sum(sum(reads) for reads in barcodes.values())) # Not mentioned in Todo
+        pdf = PdfPages('./read_length_distribution.pdf')
+        for barcode, reads in barcodes.items():
+            print('For %s, there are %d reads and %d bases' % (barcode, len(reads), sum(reads))) # Todo 2, 5
+            fig, ax = plt.subplots(figsize = (16, 9))
+            plt.hist(reads, bins = 50)
+            plt.yscale('log')
+            plt.xlabel('Reads Length')
+            plt.ylabel('Number of Reads')
+            plt.title(barcode)
+            pdf.savefig(fig) # Todo 4
+        pdf.close()
 
-    def 
+    def taxonomy_analysis(self):
+        pass     
+
+if __name__ =='__main__':
+    genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
+    genome.barcode_statistics()
         
