@@ -27,6 +27,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 import numpy as np
+from Bio.Blast import NCBIWWW, NCBIXML
+import random
 
 class Genome():
     def __init__(self, filename):
@@ -56,7 +58,7 @@ class Genome():
         print('In file %s, there are %d barcodes.' % (self.filename.split('/')[-1], len(barcodes))) # Todo 1
         print('The total number of reads is %d' % sum(len(reads) for reads in barcodes.values())) # Todo 3
         print('The total number of bases is %d' % sum(sum(reads) for reads in barcodes.values())) # Not mentioned in Todo
-        pdf = PdfPages('./read_length_distribution.pdf')
+        pdf = PdfPages('./read_length_%s.pdf' % self.filename.split('/')[-1].split('.')[0])
         for barcode, reads in barcodes.items():
             print('For %s, there are %d reads and %d bases' % (barcode, len(reads), sum(reads))) # Todo 2, 5
             fig, ax = plt.subplots(figsize = (16, 9))
@@ -69,9 +71,17 @@ class Genome():
         pdf.close()
 
     def taxonomy_analysis(self):
-        pass     
+        self.load()
+        query_seq = ''
+        for rec in self.f:
+            if len(rec.seq) < 1000:
+                continue
+            idx = random.randint(0, len(rec.seq) - 1000)
+            seq = rec.seq[idx:idx + 1000]
+            query_seq += '>' + rec.description + '\n' + str(seq) + '\n'
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
-    genome.barcode_statistics()
+    # genome.barcode_statistics()
+    genome.taxonomy_analysis()
         
