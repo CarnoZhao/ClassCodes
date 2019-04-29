@@ -18,19 +18,17 @@ Todo:
     *8. Assembly the genome and the assembly statistics
 '''
 
-from Bio import SeqIO, Seq
+from Bio import SeqIO
+from Bio.Blast import NCBIWWW
+from bs4 import BeautifulSoup
+from collections import Counter, defaultdict
+from matplotlib.backends.backend_pdf import PdfPages
 import gzip
-from collections import defaultdict
+import random
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-import numpy as np
-from Bio.Blast import NCBIWWW
-import random
-from bs4 import BeautifulSoup
 import pandas as pd
-from collections import Counter
 
 class Genome():
     def __init__(self, filename):
@@ -73,6 +71,9 @@ class Genome():
             pdf.savefig(fig) # Todo 4
         pdf.close()
 
+    def barcode_divide(self):
+
+
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         '''
         qblast is too slow. A better solution is to blast manually in web browser
@@ -93,7 +94,7 @@ class Genome():
         with open('%s.xml' % self.basename, 'w') as fw:
             fw.write(res.read())
 
-    def taxonomy_read_xml(self):
+    def __read_xml(self):
         '''
         analyze the xml result from blast, using bs4 package (BeautifulSoup)
         Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
@@ -122,7 +123,7 @@ class Genome():
             df[tag] = tlist
         df.to_csv('%s.csv' % self.basename)
 
-    def taxonomy_draw_histplot(self, count_all = True):
+    def __draw_histplot(self, count_all = True):
         '''
         draw a histogram of the number of species that the blast results show
         Since for each read, there are many results returned
@@ -142,6 +143,15 @@ class Genome():
         fig.suptitle(self.basename)
         matplotlib.rc('ytick', labelsize = 20)
         plt.savefig('%s.pdf' % self.basename)
+
+    def taxonomy_after_blast(self):
+        dirlist = os.listdir('./')
+        if '%s.xml' % self.basename not in dirlist:
+            print('ERROR:\tPlease blast first to get the .xml file !\n\t\tCall `taxonomy_blast` method or download it manually.')
+            return
+        elif '%s.csv' % self.basename not in dirlist:
+            self.__read_xml()
+        self.__draw_histplot()
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
