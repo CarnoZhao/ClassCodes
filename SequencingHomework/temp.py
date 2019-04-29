@@ -136,9 +136,10 @@ class Genome():
         else:
             counts = Counter(d[d["hit_num"] == 1].hit_def)
         counts = dict(sorted(counts.items(), key = lambda x: x[1], reverse = True)[:10])
-        plt.barh(width = list(counts.values()), y = [x.replace(' ', '\n') for x in counts.keys()])
-        plt.xlabel('Counts of Reads')
-        plt.title(self.basename)
+        fig, ax = plt.subplots(figsize = (16, 9))
+        ax.barh(width = list(counts.values()), y = [x.replace(' ', '\n') for x in counts.keys()])
+        ax.set_xlabel('Counts of Reads')
+        fig.suptitle(self.basename)
         matplotlib.rc('ytick', labelsize = 20)
         plt.savefig('%s.pdf' % self.basename)
 
