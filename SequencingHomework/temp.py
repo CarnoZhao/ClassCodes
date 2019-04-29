@@ -27,8 +27,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 import numpy as np
-from Bio.Blast import NCBIWWW, NCBIXML
+from Bio.Blast import NCBIWWW
 import random
+from bs4 import BeautifulSoup
 
 class Genome():
     def __init__(self, filename):
@@ -72,6 +73,11 @@ class Genome():
         pdf.close()
 
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
+        '''
+        qblast is too slow. A better solution is to blast manually in web browser
+        Here is the code that can extract some 1kb fragments from reads. 
+        The longer the read is, the more fragments will be extracted. The ratio is about 1 1k fragment per 10k read.
+        '''
         self.load()
         query_seq = ''
         for rec in self.f:
@@ -86,9 +92,16 @@ class Genome():
         with open('%s.xml' % self.basename, 'w') as fw:
             fw.write(res.read())
 
+    def taxonomy_xml(self):
+        '''
+        analyze the xml result from blast, using bs4 package (BeautifulSoup)
+        Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
+        '''
+        soup = BeautifulSoup(open('%s.xml' % self.basename, 'html.parser'))
+        pass
 
 if __name__ =='__main__':
     genome = Genome('/mnt/d/Grocery/DataSet/DNAlab/barcode1.fastq')
     # genome.barcode_statistics()
-    genome.taxonomy_blast()
+    # genome.taxonomy_blast()
         
