@@ -116,9 +116,9 @@ class Genome():
         Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
         available information:
         { 
-            hit_def, 
-            hit_len, 
-            hit_num, 
+            hit_def, # species
+            hit_len, # the lenth of the total lenth
+            hit_num, # 
             hit_hsps:
             {
                 hsp_bit-score, 
