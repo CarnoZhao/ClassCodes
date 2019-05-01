@@ -111,59 +111,15 @@ class Genome():
                 fasta.write('>' + rec.description + '\n' + seq + '\n')
         fasta.close()
 
-    def local_blast(self, *args):
+    def local_blast(self, method = 'blastn', db = 'nt'):
         '''
         Todo
         '''
+        outname = self.basename + '.out'
+        cmd = '%s -db %s -query %s -out %s' % (method. db, self.filename, outname)
+        os.system(cmd)
+        # Todo Based on the result format of local blast
         pass
-
-    def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
-        '''
-        Abandoned !!
-        '''
-        self.load()
-        query_seq = ''
-        for rec in self.f:
-            seqlen = len(rec.seq)
-            if seqlen < lenth:
-                continue
-            for _ in range(1 + seqlen // (lenth * squeeze)):
-                idx = random.randint(0, seqlen - lenth)
-                seq = rec.seq[idx:idx + lenth]
-                query_seq += '>' + rec.description + '\n' + str(seq) + '\n'
-        res = NCBIWWW.qblast(method, db, query_seq)
-        with open('%s.xml' % self.basename, 'w') as fw:
-            fw.write(res.read())
-
-    def __read_xml(self):
-        '''
-        (Abandoned !!)
-        analyze the xml result from blast, using bs4 package (BeautifulSoup)
-        Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
-        available information:
-        { 
-            hit_def,
-            hit_len, 
-            hit_num, 
-            hit_hsps:
-            {
-                hsp_bit-score, 
-                hsp_evalue, 
-                hsp_identity, 
-                hsp_align-len
-            }
-        }
-        '''
-        with open('%s.xml' % self.basename) as f:
-            soup = BeautifulSoup(f.read(), 'html.parser')
-        df = pd.DataFrame({})
-        tags = ('hit_def', 'hit_num', )
-        for tag in tags:
-            tlist = [t.text for t in soup.find_all(tag)]
-            if tag == 'hit-def':
-                tlist = [' '.join(t.split(' ')[:2]) if 'PREDICTED:' not in t else ' '.join(t.split(' ')[1:3]) for t in tlist]
-            df[tag] = tlist
-        df.to_csv('%s.csv' % self.basename)
 
     def __draw_histplot(self, count_all = True):
         '''
