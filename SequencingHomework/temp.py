@@ -72,6 +72,9 @@ class Genome():
         pdf.close()
 
     def barcode_divide(self):
+        '''
+        to divide a big fastq file into several files by barcode, named them using the barcode name and with a .fq suffix
+        '''
         self.load()
         exist = set()
         for rec in self.f:
@@ -158,6 +161,10 @@ class Genome():
         plt.savefig('%s.pdf' % self.basename)
 
     def taxonomy_after_blast(self):
+        '''
+        draw a hist from the csv file, 
+        if the csv does not exist, call a function to generate the csv from the xml with the same file basename
+        '''
         dirlist = os.listdir('./')
         if '%s.xml' % self.basename not in dirlist:
             print('ERROR:\tPlease blast first to get the .xml file !\n\t\tCall `taxonomy_blast` method or download it manually.')
