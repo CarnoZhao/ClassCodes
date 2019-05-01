@@ -72,7 +72,7 @@ class Genome():
         pdf.close()
 
     def barcode_divide(self):
-
+        pass
 
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         '''
