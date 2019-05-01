@@ -38,6 +38,7 @@ class Genome():
     def load(self):
         '''
         Load the file to a generator to save memory
+        Accept .fq.gz or .fq.
         '''
         try:
             self.f = SeqIO.parse(self.filename, 'fastq')
@@ -46,9 +47,9 @@ class Genome():
 
     def barcode_statistics(self):
         '''
-        Count the number of barcodes and the number of reads per barcode.
-        And do further analysis.
-        (Todo 1-5: DONE !)
+        Number of barcodes, total reads, total bases
+        Number of reads, bases per barcode
+        Distribution plot of reads length per barcode 
         '''
         self.load()
         barcodes = defaultdict(list)
@@ -73,7 +74,7 @@ class Genome():
 
     def barcode_divide(self):
         '''
-        to divide a big fastq file into several files by barcode, named them using the barcode name and with a .fq suffix
+        Divide a big fastq file into several files by barcode
         '''
         self.load()
         exist = set()
@@ -92,6 +93,9 @@ class Genome():
 
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         '''
+        (Bio.Blast.NCBIWWW.qblast is not recommended !)
+        A better solution is doing the blast in web browser
+        Try to call function `extract(self, length, squeeze)` to generate a new fasta file, and use this fasta to 
         qblast is too slow. A better solution is to blast manually in web browser
         Here is the code that can extract some 1kb fragments from reads. 
         The longer the read is, the more fragments will be extracted. The ratio is about 1 1k fragment per 10k read.
