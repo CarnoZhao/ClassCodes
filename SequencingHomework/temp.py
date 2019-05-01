@@ -72,7 +72,20 @@ class Genome():
         pdf.close()
 
     def barcode_divide(self):
-        pass
+        self.load()
+        exist = set()
+        for rec in self.f:
+            barcode = rec.description.split(' ')[-1].split('=')[-1]
+            if barcode not in exist:
+                exist.add(barcode)
+                os.system('touch %s.fq' % barcode)
+            with open('%s.fq' % barcode, 'a') as fw:
+                fw.write(rec.description + '\n' + 
+                         str(rec.seq) + '\n' + 
+                         '+' + '\n' + 
+                         ''.join(p for p in rec.letter_annotations['phred_quality'] + '\n'))
+        print('Writen:')
+        print(', '.join(barcode for barcode in exist))
 
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         '''
