@@ -75,6 +75,7 @@ class Genome():
     def barcode_divide(self):
         '''
         Divide a big fastq file into several files by barcode
+        And return the set of barcodes
         '''
         self.load()
         exist = set()
@@ -90,15 +91,35 @@ class Genome():
                          ''.join(p for p in rec.letter_annotations['phred_quality'] + '\n'))
         print('Writen:')
         print(', '.join(barcode for barcode in exist))
+        return exist
+
+    def extract_fasta(self, lenth = 1000, squeeze = 10)：
+        '''
+        Extract some smaller reads from the fastq file into a fasta fiel
+        All the fasta reads will be 1000 `lenth` long
+        And the size of the fasta will be about 1/10 `squeeze` of the fastq
+        '''
+        self.load()
+        fasta = open('%s.fa' % self.basename, 'w')
+        for rec in self.f:
+            seqlen = len(rec.seq)
+            if seqlen < lenth:
+                continue
+            for _ in range(1 + seqlen // (length * squeeze)):
+                idx = random.randint(0, seqlin - lenth)
+                seq = str(rec.seq[idx: idx + lenth])
+                fasta.write('>' + rec.description + '\n' + seq + '\n')
+        fasta.close()
+
+    def local_blast(self, *args):
+        '''
+        Todo
+        '''
+        pass
 
     def taxonomy_blast(self, lenth = 1000, squeeze = 10, method = 'blastn', db = 'nt'):
         '''
-        (Bio.Blast.NCBIWWW.qblast is not recommended !)
-        A better solution is doing the blast in web browser
-        Try to call function `extract(self, length, squeeze)` to generate a new fasta file, and use this fasta to 
-        qblast is too slow. A better solution is to blast manually in web browser
-        Here is the code that can extract some 1kb fragments from reads. 
-        The longer the read is, the more fragments will be extracted. The ratio is about 1 1k fragment per 10k read.
+        Abandoned !!
         '''
         self.load()
         query_seq = ''
@@ -106,10 +127,10 @@ class Genome():
             seqlen = len(rec.seq)
             if seqlen < lenth:
                 continue
-            for _ in range(1 + seqlen // (lenth * squeeze)): # roughly speaking, get 1k bases per 10k bases
+            for _ in range(1 + seqlen // (lenth * squeeze)):
                 idx = random.randint(0, seqlen - lenth)
                 seq = rec.seq[idx:idx + lenth]
-                query_seq += '>' + rec.description + '\n' + str(seq) + '\n' # convert to fasta format
+                query_seq += '>' + rec.description + '\n' + str(seq) + '\n'
         res = NCBIWWW.qblast(method, db, query_seq)
         with open('%s.xml' % self.basename, 'w') as fw:
             fw.write(res.read())
@@ -120,9 +141,9 @@ class Genome():
         Not sure that Bio.Blast.NCBIXML works for multi-reads results, so I use bs4 to deal with tags.
         available information:
         { 
-            hit_def, # species
-            hit_len, # the lenth of the total lenth
-            hit_num, # 
+            hit_def,
+            hit_len, 
+            hit_num, 
             hit_hsps:
             {
                 hsp_bit-score, 
@@ -145,7 +166,7 @@ class Genome():
 
     def __draw_histplot(self, count_all = True):
         '''
-        draw a histogram of the number of species that the blast results show
+        Draw a histogram of the number of species that the blast results show
         Since for each read, there are many results returned
         So when `count_all` is `True`, all of these results will be included
         Otherwise, only the first result (best match result) will be included
@@ -166,8 +187,8 @@ class Genome():
 
     def taxonomy_after_blast(self):
         '''
-        draw a hist from the csv file, 
-        if the csv does not exist, call a function to generate the csv from the xml with the same file basename
+        Draw a histogra from the csv file, 
+        If the csv file does not exist, call a function to generate the csv from the xml with the same file basename
         '''
         dirlist = os.listdir('./')
         if '%s.xml' % self.basename not in dirlist:
