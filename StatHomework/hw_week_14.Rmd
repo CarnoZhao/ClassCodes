@@ -1,6 +1,6 @@
 ---
 title: "| EEEB UN3005/GR5005\n| Homework - Week 14 - Due 07 May 2019"
-author: "USE YOUR NAME HERE"
+author: "Xun Zhao, xz2827"
 output: pdf_document
 fontsize: 12pt
 ---
@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(rethinking)
 library(dplyr)
+library(ggplot2)
 ```
 
 
@@ -29,7 +30,15 @@ First, fit a binomial generalized linear model using `district` to predict a wom
 After fitting the model, use `precis()` to report the 97% PIs of the fit model parameters.
 
 ```{r}
-
+data("bangladesh")
+d = filter(bangladesh, district >= 1 & district <= 50)
+model.1 = map(
+	alist(
+		use.contraception ~ dbinom(1, p),
+		logit(p) <- a[district],
+		a[district] ~ dnorm(0, 5)),
+	data = d)
+precis(model.1, 0.97)
 ```
 
 
@@ -41,10 +50,32 @@ After fitting the model, use `precis()` to report the 97% HPDIs of the fit model
 
 Using posterior samples from the model, visualize the implied probability of contraception use for a woman occupying an *average* district.
 
+```{r, results = 'hide'}
+model.2 = map2stan(
+	alist(
+		use.contraception ~ dbinom(1, p),
+		logit(p) <- a[district],
+		a[district] ~ dnorm(mu, sigma),
+		mu ~ dnorm(0, 5),
+		sigma ~ dcauchy(0, 5)),
+	chains = 2,
+	data = d)
+```
 ```{r}
+precis(model.2, 0.97)
+sample.2 = extract.samples(model.2, 2000)
+```
+If *average* means the average of all distrcts:
 
+```{r}
+dens(logistic(colMeans(sample.2$a)))
 ```
 
+If *average* means the district with average label number (25, the mean of 1 and 50):
+
+```{r}
+dens(logistic(sample.2$a[,25]))
+```
 
 ## Problem 3 (4 points)
 
@@ -55,9 +86,27 @@ Some hints may be useful here. First, you can use any plotting approach you'd li
 Using your visualization to help with interpretation, how do these two models, the binomial GLM and the binomial GLMM, disagree on the implied probability of contraception use among districts? In which districts is the disagreement most extreme? Can you explain why?
 
 ```{r}
-
+coef.1 = coef(model.1)
+coef.2 = coef(model.2)[1:50]
+df = data.frame(district = c(1:50, 1:50), 
+				   prob = logistic(c(coef.1, coef.2)),
+				   model = c(rep('model.1', 50), rep('model.2', 50)))
+graph = ggplot(df, aes(x = district, y = prob, color = model)) + 
+	geom_point() +
+	xlab("district") + ylab("probability") + 
+	labs(fill = "model")
+plot(graph)
 ```
 
+---
+
+### Answer: 
+
+The biggest difference is that GLMM's reuslts are closer to each other, and none of them is extremely high or extremely low. However, In GLM's results, some points are scattered far away from the center line.
+
+In the 3rd district, GLM gives out a result over 0.8, but GLMM's result is less that 0.5. This is because that the GLMM use the hyper-parameter to restrict the model-parameter, making sure that they follow certain distribution.
+
+---
 
 ## Problem 4 (2 points)
 
@@ -67,6 +116,28 @@ After fitting the new model, use `precis()` to report the 97% HPDIs of the fit m
 
 Interpret the urban living effect. Based on this dataset and model, are urban women more or less likely to use contraception?
 
-```{r}
-
+```{r, results = 'hide'}
+model.3 = map2stan(
+	alist(
+		use.contraception ~ dbinom(1, p),
+		logit(p) <- a[district] + b[district] * urban,
+		a[district] ~ dnorm(mua, sigmaa),
+		mua ~ dnorm(0, 5),
+		sigmaa ~ dcauchy(0, 5),
+		b[district] ~ dnorm(mub, sigmab),
+		mub ~ dnorm(0, 5),
+		sigmab ~ dcauchy(0, 5)),
+	chains = 2,
+	data = d)
 ```
+```{r}
+precis(model.3, 0.97)
+```
+
+---
+
+### Answer:
+
+The results show that all the `b` parameter is positive. For certain distrct, the probability of a woman to use contraception is `logistic(a + b * urban)`. So, when the b is positive, that is, the urban women are more likely to use contraception, since `logistic(a + b)` is larger than `logistic(a)`.
+
+---
