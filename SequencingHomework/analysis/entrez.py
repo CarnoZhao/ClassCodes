@@ -33,6 +33,12 @@ def get_org(accs):
     fw.close()
 
 res = func()
+with open('2.txt', 'w') as fw:
+    fw.write('\n'.join(x.split('.')[0] for x in res.saccver.tolist()))
+print(len(res))
+st = set(x.split('.')[0] for x in res.saccver.tolist())
+print(list(st)[:5])
+print(len(st))
 # print(res.head(10))
-get_org(res)
+# get_org(res)
 
