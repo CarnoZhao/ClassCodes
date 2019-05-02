@@ -1,4 +1,4 @@
-from Bio import Entrez, SeqIO, Seq
+from Bio import Entrez, SeqIO, Seq, GenBank
 import pandas as pd
 
 Entrez.email = 'xz2827@columbia.edu'
@@ -7,13 +7,23 @@ def func():
     data = pd.read_csv('../../../DataLists/barcode01.out', sep = '\t')
 
     data.columns = ['qaccver', 'saccver', 'pident', 'length', 'mismatch', 'gapopen', 'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore']
-# print(data.head())
+    ret = data['saccver'][:10].tolist()
+    print(ret)
+    return ret
 
 def get_org(accs):
+    phylo = 'kingdom-phylum-class-order-family-genus-species'.split('-')
+    df = dict((x, []) for x in phylo)
     hdl = Entrez.efetch(db = 'nucleotide', id = accs, rettype = 'gb')
-    recs = SeqIO.parse(hdl, 'gb')
-    rec = next(recs)
-    print(rec.__dir__())
+    recs = GenBank.parse(hdl)
+    for i, rec in enumerate(recs):
+        tax = rec.taxonomy
+        org = rec.organism
+        print(tax)
+        for j, t in enumerate(tax):
+            df[phylo[j]].append(t)
+        df[phylo[j + 1]].append(org)
+    print(pd.DataFrame(df))
 
-get_org(['NC_012759.1'])
+get_org(func())
 
