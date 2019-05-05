@@ -7,7 +7,7 @@ fontsize: 12pt
 
 # Step 1: Setting up the Restriction Digests
 
-|What|How|Why|
+|Whats|How|Why|
 |:-------------|:---------------------------------:|--------------:|
 |Label EP tubes|E, H, P, EH, EP, HP, EHP, L, pBR322|Specify enzymes|
 ||||
