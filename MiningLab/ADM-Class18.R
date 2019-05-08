@@ -17,9 +17,9 @@ esti.glm = ifelse(fitted(fit.glm) > 0.5, 1, 0)
 esti.svm = ifelse(fitted(fit.svm) > 0, 1, 0)
 esti.tree = ifelse(predict(fit.tree, value = "prob")[,2] > 0.5, 1, 0)
 
-err.rate.glm = sum(esti.glm != data$Classification) / length(data$Classification)
-err.rate.svm = sum(esti.svm != data$Classification) / length(data$Classification)
-err.rate.tree = sum(esti.tree != data$Classification) / length(data$Classification)
+err.rate.glm = mean(esti.glm != data$Classification)
+err.rate.svm = mean(esti.svm != data$Classification)
+err.rate.tree = mean(esti.tree != data$Classification)
 
 result = prediction(fitted(fit.glm), data$Classification)
 perf = performance(result, measure = 'tpr', x.measure = 'fpr')
