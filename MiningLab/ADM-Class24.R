@@ -1,8 +1,8 @@
 setwd('D:/Codes/ClassCodes/MiningLab/')
-# pixels = as.matrix(read.table('../Data/uspsdata.txt'))
-# labels = as.matrix(read.table('../Data/uspscl.txt'))
-# labels = ifelse(labels == 1, 1, 0)
-mnist_raw <- read_csv("https://pjreddie.com/media/files/mnist_train.csv", col_names = FALSE)
+pixels = as.matrix(read.table('../Data/uspsdata.txt'))
+labels = as.matrix(read.table('../Data/uspscl.txt'))
+labels = ifelse(labels == 1, 1, 0)
+# mnist_raw <- read_csv("https://pjreddie.com/media/files/mnist_train.csv", col_names = FALSE)
 
 m = 200
 n1 = 256
