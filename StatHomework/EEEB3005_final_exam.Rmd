@@ -71,6 +71,15 @@ graph = ggplot(Rinder, aes(x = herd, y = proportion, color = stock)) + geom_poin
 plot(graph)
 ```
 
+---
+
+### Answer:
+
+In this graph, there are 8 herds where the mortality of large stock is greater than small stock, while there are only 3 herds that mortality of small stock is greater than large stock.
+
+So from the graph, the small stock lives better.
+
+---
 
 ## Problem 3 (15 points)
 
@@ -119,7 +128,7 @@ Finally, what is the expected difference in probability of mortality between sma
 samples.1 = extract.samples(model.1, n = 10000)
 dens(logistic(samples.1$a), col = 'red', 
      xlim = c(0.4, 0.6), ylim = c(0, 70),
-     xlab = 'Red: Samll,  Blue: Large')
+     xlab = 'Red: Small,  Blue: Large')
 dens(logistic(samples.1$a + samples.1$b), add = TRUE, col = 'blue')
 ```
 
@@ -159,7 +168,7 @@ p_{\text{large}} = \text{logistic}(a + b \cdot 1)
 \end{aligned}
 $$
 
-Since $b$ is positive, so the small stock dies with lower porbability, which means they survive better.
+Since $b$ is positive, so $p_{\text{small}} < p_{\text{large}}$ and the small stock dies with lower porbability, which means they survive better.
 
 ---
 
@@ -169,7 +178,7 @@ Plot the implied probability of mortality for small and large stock in an *avera
 
 ```{r}
 samples.2 = extract.samples(model.2, n = 4000)
-dens(logistic(samples.2$a), col = 'red', xlab = 'Red: Samll,  Blue: Large')
+dens(logistic(samples.2$a), col = 'red', xlab = 'Red: Small,  Blue: Large')
 sampleb = rep(samples.2$b, dim(samples.2$a)[2])
 dim(sampleb) = dim(samples.2$a)
 dens(logistic(samples.2$a + sampleb), add = TRUE, col = 'blue')
@@ -195,7 +204,9 @@ Here, we can see that when considering the sum of all herds, the mortality of sm
 
 This might be because that for small stocks, herds with higher mortality relatively have larger size, and herds with lower mortality realtively have smaller size. For example, herds 3, 5, 6, whose mortality are greater than 49%, have herd size larger than 500, a really big number compared with others. So these big numbers make the mean mortality higher than 50%.
 
-Conversely, for large stocks, the difference of herd size among herds is not so large, which makes the mortality slightly lower than small stock.
+Conversely, for large stocks, the size of different herds are similar to each other, which makes the average mortality slightly lower than small stock.
+
+In Question.3 the model considers all herds as a whole group, so the death proportion of small stock is mainly decided by big size herds, whose mortality is higher. However, in Question.5, we use different intercepts for different herds, avoiding the influence between herds. So Question.5 shows the real pure model of herds, that is, the small stock lives better.
 
 ---
 
