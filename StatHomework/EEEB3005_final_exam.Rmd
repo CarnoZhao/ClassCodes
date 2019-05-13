@@ -128,7 +128,7 @@ Finally, what is the expected difference in probability of mortality between sma
 samples.1 = extract.samples(model.1, n = 10000)
 dens(logistic(samples.1$a), col = 'red', 
      xlim = c(0.4, 0.6), ylim = c(0, 70),
-     xlab = 'Red: Small,  Blue: Large')
+     xlab = 'Implied Probability, Red: Small,  Blue: Large')
 dens(logistic(samples.1$a + samples.1$b), add = TRUE, col = 'blue')
 ```
 
@@ -178,7 +178,7 @@ Plot the implied probability of mortality for small and large stock in an *avera
 
 ```{r}
 samples.2 = extract.samples(model.2, n = 4000)
-dens(logistic(samples.2$a), col = 'red', xlab = 'Red: Small,  Blue: Large')
+dens(logistic(samples.2$a), col = 'red', xlab = 'Implied Probability, Red: Small,  Blue: Large')
 sampleb = rep(samples.2$b, dim(samples.2$a)[2])
 dim(sampleb) = dim(samples.2$a)
 dens(logistic(samples.2$a + sampleb), add = TRUE, col = 'blue')
