@@ -7,29 +7,29 @@
 \date{\today}
 
 \begin{document}
-    \maketitle
+\maketitle
 
-    \renewcommand{\abstractname}{摘要}
-    \begin{abstract}
-        摘要
-        \keywords{单细胞测序 器官发育 胚胎发育}
-    \end{abstract}
+\begin{abstract}
+摘要
+\keywords{单细胞测序\ 器官发育\ 胚胎发育}
+\end{abstract}
 
-	\section{引言}
+\section{引言}
 
-    \section{正文}
-		\subsection{胚胎器官发生}
-        胚胎器官发生指受精卵发育为一个完整个体的过程中，干细胞逐渐分化并形成具有正常功能器官的过程。解析胚胎器官发生的过程有助于区别正常及病理条件下的器官生成机制，理解器官发生过程中的信号通路和不同组织之间的相互作用，以及干细胞分化的机理\citep{belle_tridimensional_2017, lancaster_organogenesis_2014}。对于胚胎器官发育的研究从最初形态学观察研究发展到分子生物学、生物化学染色等手段，一步步从宏观到微观，在细胞、分子层面上展示胚胎器官发生的过程。
-        
-        受精卵分裂经过原肠胚形成后，变为由三层或两层胚层构成的原肠胚结构，胚层在多种信号通路的控制下继续发育，逐步形成器官\citep{zorn_vertebrate_2009}。
-        \subsection{单细胞测序}
-        但是在单细胞测序技术出现之前，测序样品局限于细胞群体而非单个细胞，导致了基于测序结果的各类组学分析没有单细胞层面上的分辨率\citep{potter_single-cell_2018}。
-            \subsubsection{单细胞转录组测序}
-            \subsubsection{单细胞ATAC测序}
-	\section{讨论}
-        \subsection{讨论第一部分}
-            讨论第一部分内容
-	\section{结论}
-        这是结论
-    \bibliography{ReviewWriting}
+\section{正文}
+\subsection{单细胞RNA测序}
+DNA测序技术在40年来飞速发展，从最初的Sanger测序到现在第二代和第三代例如Ilummina、PacBio、Nanopore测序技术，已经极大的提高了测序通量并且降低了测序价格\citep{shendure_dna_2017}。RNA测序技术 (RNA-seq) 在2008年首次出现\citep{cloonan_stem_2008}，在一年之后，即2009年，出现了单细胞RNA测序 (scRNA-seq)\citep{tang_mrna-seq_2009}。
+
+单细胞RNA测序大致分为四步。首先是将样品分为单个细胞或单个细胞核，再经过逆转录并对cDNA进行PCR扩增，最后进行测序。常见的scRNA-seq测序方法有种，一共可以归为两类，一类为对RNA全长测序 (full-length)，一类为基于人工添加标签的测序 (tag-based)\citep{hedlund_single-cell_2018}。在面对不同生物学问题上两种类别各有优劣，全长测序有更高的敏感度和可重复性，标签法测序适用于更廉价的大规模测序\citep{ziegenhain_comparative_2017}。
+
+scRNA-seq基于原有RNA-seq技术
+
+相比于原有的RNA测序技术，scRNA-seq最重要的一点改进即在单个细胞水平的分辨率，原有的技术只能对细胞群体进行基因表达。
+
+\section{讨论}
+\subsection{讨论第一部分}
+    讨论第一部分内容
+\section{结论}
+这是结论
+\bibliography{ReviewWriting}
 \end{document}

@@ -3,3 +3,8 @@
 *.fdb_latexmk
 *.dvi
 *.fls
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.xdv
